@@ -1,0 +1,74 @@
+# Name: Dharati Sabale
+# Class: TYCORE03
+# Roll No: 59
+# Assignment: Practical 02
+import heapq
+
+graph = {
+    'A': {'B': 2, 'E': 3},
+    'B': {'A': 2, 'C': 1, 'G': 9},
+    'C': {'B': 1},
+    'D': {'E': 6, 'G': 1},
+    'E': {'A': 3, 'D': 6},
+    'G': {'B': 9, 'D': 1}
+}
+
+heuristic = {
+    'A': 11,
+    'B': 6,
+    'C': 99,
+    'D': 1,
+    'E': 7,
+    'G': 0
+}
+
+
+def a_star(graph, start, goal):
+    open_list = []
+    heapq.heappush(open_list, (heuristic[start], 0, start))
+
+    g_cost = {node: float('inf') for node in graph}
+    g_cost[start] = 0
+    parent = {start: None}
+    closed_list = set()
+
+    while open_list:
+        f, g, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+            path.reverse()
+            return path, g
+
+        if current in closed_list:
+            continue
+        closed_list.add(current)
+
+        for neighbour, cost in graph[current].items():
+            if neighbour in closed_list:
+                continue
+            new_g = g + cost
+            if new_g < g_cost[neighbour]:
+                g_cost[neighbour] = new_g
+                parent[neighbour] = current
+                new_f = new_g + heuristic[neighbour]
+                heapq.heappush(open_list, (new_f, new_g, neighbour))
+
+    return None, float('inf')
+
+
+start_node = input("Enter start node: ").strip().upper()
+goal_node = input("Enter goal node: ").strip().upper()
+
+if start_node not in graph or goal_node not in graph:
+    print("Invalid node entered")
+else:
+    path, total_cost = a_star(graph, start_node, goal_node)
+    if path:
+        print("Shortest path:", " -> ".join(path))
+        print("Total cost:", total_cost)
+    else:
+        print("No path exists")
