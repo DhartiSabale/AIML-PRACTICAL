@@ -1,0 +1,55 @@
+# Name: Dharti Sabale
+# Class: TYCORE03
+# Roll No: 59
+# Assignment: Practical 06
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
+
+df = pd.read_csv("titanic_sample.csv", na_values="?")
+
+print("First 5 rows")
+print(df.head())
+print()
+
+print("Data types")
+print(df.dtypes)
+print()
+
+print("Missing values before cleaning")
+print(df.isnull().sum())
+print()
+
+df["Age"] = df["Age"].fillna(df["Age"].median())
+df["Embarked"] = df["Embarked"].fillna(df["Embarked"].mode()[0])
+
+print("Missing values after cleaning")
+print(df.isnull().sum())
+print()
+
+label_encoder = LabelEncoder()
+df["Sex"] = label_encoder.fit_transform(df["Sex"])
+
+df = pd.get_dummies(df, columns=["Embarked"], dtype=int)
+
+print("Data after encoding")
+print(df.head())
+print()
+
+minmax = MinMaxScaler()
+df[["Age", "Fare"]] = minmax.fit_transform(df[["Age", "Fare"]])
+
+print("Data after Min-Max scaling")
+print(df[["Age", "Fare"]].head())
+print()
+
+df_standard = df.copy()
+standard = StandardScaler()
+df_standard[["Age", "Fare"]] = standard.fit_transform(df_standard[["Age", "Fare"]])
+
+print("Data after Standardization")
+print(df_standard[["Age", "Fare"]].head())
+
+df.to_csv("titanic_cleaned.csv", index=False)
+print()
+print("Cleaned data saved to titanic_cleaned.csv")
