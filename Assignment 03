@@ -1,0 +1,87 @@
+# Name: Dharati Sabale
+# Class: TYCORE03
+# Roll No: 59
+# Assignment: Practical 03
+
+def initialize_board():
+    board = []
+    for i in range(3):
+        board.append(['-', '-', '-'])
+    return board
+
+
+def display_board(board):
+    print()
+    for row in board:
+        print(" ".join(row))
+    print()
+
+
+def check_win(board, player):
+    for row in board:
+        if row[0] == player and row[1] == player and row[2] == player:
+            return True
+
+    for col in range(3):
+        if board[0][col] == player and board[1][col] == player and board[2][col] == player:
+            return True
+
+    if board[0][0] == player and board[1][1] == player and board[2][2] == player:
+        return True
+    if board[0][2] == player and board[1][1] == player and board[2][0] == player:
+        return True
+
+    return False
+
+
+def check_draw(board):
+    for row in board:
+        for cell in row:
+            if cell == '-':
+                return False
+    return True
+
+
+def player_move(board, player):
+    while True:
+        move = input("Player " + player + " enter your move as row,col (1-3): ")
+        try:
+            row, col = move.split(",")
+            row = int(row) - 1
+            col = int(col) - 1
+        except ValueError:
+            print("Invalid move. Try again.")
+            continue
+
+        if 0 <= row <= 2 and 0 <= col <= 2 and board[row][col] == '-':
+            board[row][col] = player
+            break
+        else:
+            print("Invalid move. Try again.")
+
+
+def play_tic_tac_toe():
+    board = initialize_board()
+    current_player = 'X'
+
+    while True:
+        display_board(board)
+        player_move(board, current_player)
+
+        if check_win(board, current_player):
+            display_board(board)
+            print("Player", current_player, "wins!")
+            break
+
+        if check_draw(board):
+            display_board(board)
+            print("It's a draw!")
+            break
+
+        if current_player == 'X':
+            current_player = 'O'
+        else:
+            current_player = 'X'
+
+
+play_tic_tac_toe()
