@@ -1,0 +1,48 @@
+# Name: Dharati Sabale
+# Class: TYCORE03
+# Roll No: 59
+# Assignment: Practical 01
+from collections import deque
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F', 'G'],
+    'D': ['B'],
+    'E': ['B'],
+    'F': ['C'],
+    'G': ['C']
+}
+
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque()
+    order = []
+
+    queue.append(start)
+    visited.add(start)
+
+    while queue:
+        current = queue.popleft()
+        order.append(current)
+
+        for neighbour in graph[current]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+    return order
+
+
+print("Graph (adjacency list):")
+for node in graph:
+    print(node, "->", graph[node])
+
+start_node = input("Enter starting node: ").strip().upper()
+
+if start_node not in graph:
+    print("Node not found in graph")
+else:
+    result = bfs(graph, start_node)
+    print("BFS traversal:", " ".join(result))
