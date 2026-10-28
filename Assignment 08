@@ -1,0 +1,75 @@
+# Name: Dharti Sabale
+# Class: TY CORE 03
+# Roll no: 59
+# Assignment: 08
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import classification_report, roc_curve, roc_auc_score
+
+data = load_breast_cancer()
+X = data.data
+y = data.target
+
+print("Shape of dataset:", X.shape)
+print("Classes:", data.target_names)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+model = LogisticRegression(max_iter=5000)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+y_prob = model.predict_proba(X_test)[:, 1]
+
+acc = accuracy_score(y_test, y_pred)
+print("\nAccuracy:", round(acc * 100, 2), "%")
+
+cm = confusion_matrix(y_test, y_pred)
+print("\nConfusion Matrix:\n", cm)
+
+plt.figure(figsize=(5, 4))
+plt.imshow(cm, cmap="Blues")
+plt.title("Confusion Matrix")
+plt.colorbar()
+plt.xticks([0, 1], data.target_names)
+plt.yticks([0, 1], data.target_names)
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+
+for i in range(2):
+    for j in range(2):
+        plt.text(j, i, cm[i, j], ha="center", va="center", fontsize=14)
+
+plt.show()
+
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred, target_names=data.target_names))
+
+fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+auc = roc_auc_score(y_test, y_prob)
+
+plt.figure(figsize=(6, 5))
+plt.plot(fpr, tpr, label="Logistic Regression (AUC = %.3f)" % auc)
+plt.plot([0, 1], [0, 1], "k--", label="Random Guess")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+print("ROC-AUC Score:", round(auc, 4))
